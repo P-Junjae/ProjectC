@@ -1,3 +1,30 @@
+<?php
+// データベース接続設定
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "care_support";
+
+// MySQL接続
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// 接続チェック
+if ($conn->connect_error) {
+    die("接続失敗: " . $conn->connect_error);
+}
+
+// 患者情報をデータベースから取得
+$patients_result = $conn->query("SELECT patient_id, patient_name FROM 患者");
+if ($patients_result === false) {
+    die("SQLエラー: " . $conn->error);
+}
+
+// 職員情報をデータベースから取得
+$staff_result = $conn->query("SELECT staff_id, staff_name FROM 職員");
+if ($staff_result === false) {
+    die("SQLエラー: " . $conn->error);
+}
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -38,19 +65,13 @@
     <hr>
 
     <!-- ケア管理情報の追加 -->
-<h2>ケア管理情報の追加</h2>
-<form action="insert_care.php" method="post">
-    <label for="patient_id">患者名: </label>
-    <select id="patient_id" name="patient_id" required>
-        <option value="" disabled selected>選択してください</option>
-        <?php
-        // 患者情報をデータベースから取得
-        $patients_result = $conn->query("SELECT patient_id, patient_name FROM 患者");
-
-        // エラーチェック
-        if ($patients_result === false) {
-            echo "SQLエラー: " . $conn->error;
-        } else {
+    <h2>ケア管理情報の追加</h2>
+    <form action="insert_care.php" method="post">
+        <label for="patient_id">患者名: </label>
+        <select id="patient_id" name="patient_id" required>
+            <option value="" disabled selected>選択してください</option>
+            <?php
+            // 患者情報が取得できているか確認
             if ($patients_result->num_rows > 0) {
                 while ($row = $patients_result->fetch_assoc()) {
                     echo "<option value='{$row['patient_id']}'>{$row['patient_name']}</option>";
@@ -58,21 +79,14 @@
             } else {
                 echo "<option value='' disabled>患者情報が見つかりません</option>";
             }
-        }
-        ?>
-    </select><br><br>
+            ?>
+        </select><br><br>
 
-    <label for="staff_id">職員名: </label>
-    <select id="staff_id" name="staff_id" required>
-        <option value="" disabled selected>選択してください</option>
-        <?php
-        // 職員情報をデータベースから取得
-        $staff_result = $conn->query("SELECT staff_id, staff_name FROM 職員");
-
-        // エラーチェック
-        if ($staff_result === false) {
-            echo "SQLエラー: " . $conn->error;
-        } else {
+        <label for="staff_id">職員名: </label>
+        <select id="staff_id" name="staff_id" required>
+            <option value="" disabled selected>選択してください</option>
+            <?php
+            // 職員情報が取得できているか確認
             if ($staff_result->num_rows > 0) {
                 while ($row = $staff_result->fetch_assoc()) {
                     echo "<option value='{$row['staff_id']}'>{$row['staff_name']}</option>";
@@ -80,20 +94,19 @@
             } else {
                 echo "<option value='' disabled>職員情報が見つかりません</option>";
             }
-        }
-        ?>
-    </select><br><br>
+            ?>
+        </select><br><br>
 
-    <label for="care_date">ケア日: </label>
-    <input type="date" id="care_date" name="care_date" required><br><br>
+        <label for="care_date">ケア日: </label>
+        <input type="date" id="care_date" name="care_date" required><br><br>
 
-    <label for="care_type">ケアの種類: </label>
-    <input type="text" id="care_type" name="care_type" required><br><br>
+        <label for="care_type">ケアの種類: </label>
+        <input type="text" id="care_type" name="care_type" required><br><br>
 
-    <label for="notes">メモ: </label>
-    <textarea id="notes" name="notes"></textarea><br><br>
+        <label for="notes">メモ: </label>
+        <textarea id="notes" name="notes"></textarea><br><br>
 
-    <button type="submit">ケア情報を追加</button>
-</form>
+        <button type="submit">ケア情報を追加</button>
+    </form>
 </body>
 </html>
