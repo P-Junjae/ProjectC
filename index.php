@@ -37,9 +37,50 @@
     <hr>
 
     <!-- ケア管理情報の追加 -->
-<!-- ケア管理情報 -->
-<h2>ケア管理情報</h2>
+    <h2>ケア管理情報</h2>
     <a href="add_care.php" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">ケア管理情報を追加する</a>
+
+    <hr>
+
+    <!-- 患者のスケジュール -->
+<h2>患者のスケジュール</h2>
+<?php
+// データベース接続
+include("db_connect.php");
+
+// 患者情報を取得
+$patients_result = $conn->query("SELECT patient_id, patient_name FROM 患者");
+
+if ($patients_result->num_rows > 0) {
+    while ($row = $patients_result->fetch_assoc()) {
+        echo '<p>';
+        echo '<a href="view_patient_schedule.php?patient_id=' . $row['patient_id'] . '" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">';
+        echo $row['patient_name'] . 'さんのスケジュールを表示</a>';
+        echo '</p>';
+    }
+} else {
+    echo "<p>患者が登録されていません。</p>";
+}
+?>
+
+<hr>
+
+<!-- 編集リンク -->
+<h2>スケジュール編集</h2>
+<?php
+$schedules_result = $conn->query("SELECT * FROM スケジュール");
+
+if ($schedules_result->num_rows > 0) {
+    while ($schedule = $schedules_result->fetch_assoc()) {
+        echo '<p>';
+        echo '<a href="edit_schedule.php?schedule_id=' . $schedule['schedule_id'] . '" style="display: inline-block; padding: 10px 20px; background-color: #ffc107; color: white; text-decoration: none; border-radius: 5px;">';
+        echo 'スケジュール編集（' . $schedule['schedule_id'] . '）</a>';
+        echo '</p>';
+    }
+} else {
+    echo "<p>スケジュールが登録されていません。</p>";
+}
+?>
 
 </body>
 </html>
