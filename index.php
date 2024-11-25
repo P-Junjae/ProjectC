@@ -37,62 +37,9 @@
     <hr>
 
     <!-- ケア管理情報の追加 -->
-<h2>ケア管理情報の追加</h2>
-<form action="insert_care.php" method="post">
-    <label for="patient_id">患者名: </label>
-    <select id="patient_id" name="patient_id" required>
-        <option value="" disabled selected>選択してください</option>
-        <?php
-        // 患者情報をデータベースから取得
-        $patients_result = $conn->query("SELECT patient_id, patient_name FROM 患者");
+<!-- ケア管理情報 -->
+<h2>ケア管理情報</h2>
+    <a href="add_care.php" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">ケア管理情報を追加する</a>
 
-        // エラーチェック
-        if ($patients_result === false) {
-            echo "SQLエラー: " . $conn->error;
-        } else {
-            if ($patients_result->num_rows > 0) {
-                while ($row = $patients_result->fetch_assoc()) {
-                    echo "<option value='{$row['patient_id']}'>{$row['patient_name']}</option>";
-                }
-            } else {
-                echo "<option value='' disabled>患者情報が見つかりません</option>";
-            }
-        }
-        ?>
-    </select><br><br>
-
-    <label for="staff_id">職員名: </label>
-    <select id="staff_id" name="staff_id" required>
-        <option value="" disabled selected>選択してください</option>
-        <?php
-        // 職員情報をデータベースから取得
-        $staff_result = $conn->query("SELECT staff_id, staff_name FROM 職員");
-
-        // エラーチェック
-        if ($staff_result === false) {
-            echo "SQLエラー: " . $conn->error;
-        } else {
-            if ($staff_result->num_rows > 0) {
-                while ($row = $staff_result->fetch_assoc()) {
-                    echo "<option value='{$row['staff_id']}'>{$row['staff_name']}</option>";
-                }
-            } else {
-                echo "<option value='' disabled>職員情報が見つかりません</option>";
-            }
-        }
-        ?>
-    </select><br><br>
-
-    <label for="care_date">ケア日: </label>
-    <input type="date" id="care_date" name="care_date" required><br><br>
-
-    <label for="care_type">ケアの種類: </label>
-    <input type="text" id="care_type" name="care_type" required><br><br>
-
-    <label for="notes">メモ: </label>
-    <textarea id="notes" name="notes"></textarea><br><br>
-
-    <button type="submit">ケア情報を追加</button>
-</form>
 </body>
 </html>

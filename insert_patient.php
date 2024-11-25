@@ -34,7 +34,7 @@ if ($conn->query($sql) === TRUE) {
     echo "エラー: " . $conn->error;
 }
 
-echo '<p><a href="index.html" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">トップページに戻る</a></p>';
+echo '<p><a href="index.php" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">トップページに戻る</a></p>';
 
 
 $conn->close();
