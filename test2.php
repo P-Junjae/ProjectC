@@ -25,7 +25,7 @@
     </style>
 </head>
 <body>
-    <h1>介護管理サポートページ</h1>
+    <?php include("html/header.html"); ?>
     <p>トップページ</p>
     <p>各種機能ページ</p>
     <h1>ページ移動ボタンの例</h1>
