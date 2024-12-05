@@ -4,17 +4,19 @@ import numpy as np
 from norfair import Tracker, Detection
 from datetime import datetime
 import openpyxl
+from tkinter import Tk, filedialog
 
 # エクセルファイルの準備
-def create_or_open_excel(file_name='count_report.xlsx'):
+def create_or_open_excel(file_path):
     try:
-        wb = openpyxl.load_workbook(file_name)
+        wb = openpyxl.load_workbook(file_path)
+        sheet = wb.active
     except FileNotFoundError:
         wb = openpyxl.Workbook()
         sheet = wb.active
         sheet.title = 'Count Data'
         sheet.append(['日付', '利用者人数'])  # ヘッダー追加
-    return wb
+    return wb, sheet
 
 # トラッカー設定
 tracker = Tracker(distance_function="euclidean", distance_threshold=50)
@@ -22,16 +24,53 @@ tracker = Tracker(distance_function="euclidean", distance_threshold=50)
 # YOLOモデルのロード
 model = YOLO('yolov8n.pt')
 
-# 動画ファイルのパス
-filepath = 'test3.MP4'
-cap = cv2.VideoCapture(filepath)
+# Tkinterを使用してファイル選択ダイアログを開く
+def select_video_file():
+    root = Tk()
+    root.withdraw()  # Tkinterウィンドウを非表示にする
+    video_path = filedialog.askopenfilename(
+        title="動画ファイルを選択してください",
+        filetypes=[("動画ファイル", "*.mp4;*.avi;*.mov"), ("すべてのファイル", "*.*")]
+    )
+    return video_path
+
+# Tkinterを使用して保存先を選択
+def select_save_path():
+    root = Tk()
+    root.withdraw()  # Tkinterウィンドウを非表示にする
+    save_path = filedialog.asksaveasfilename(
+        title="保存先を選択してください",
+        defaultextension=".xlsx",
+        filetypes=[("Excelファイル", "*.xlsx"), ("すべてのファイル", "*.*")]
+    )
+    return save_path
+
+# 動画ファイルのパスを選択
+video_path = select_video_file()
+if not video_path:
+    print("動画ファイルが選択されませんでした。")
+    exit()
+
+# 保存先を選択
+excel_path = select_save_path()
+if not excel_path:
+    print("保存先が選択されませんでした。")
+    exit()
+
+cap = cv2.VideoCapture(video_path)
+
+if not cap.isOpened():
+    print("Error: Could not open video.")
+    exit()
+else:
+    print("Video opened successfully.")
 
 # カウント用
 total_count = 0
 tracked_ids = set()
 
 # エクセルファイルの準備
-wb = create_or_open_excel()
+wb, sheet = create_or_open_excel(excel_path)
 
 # 最初の日付を設定
 current_date = datetime.now().strftime('%Y-%m-%d')
@@ -39,7 +78,7 @@ current_date = datetime.now().strftime('%Y-%m-%d')
 while True:
     ret, frame = cap.read()
     if not ret:
-        print("Error reading frame or end of video stream.")
+        print(f"Error reading frame at {cap.get(cv2.CAP_PROP_POS_FRAMES)}")
         break
 
     # YOLOによる物体検出
@@ -86,10 +125,9 @@ while True:
     new_date = datetime.now().strftime('%Y-%m-%d')
     if new_date != current_date:  # 日付が変更された場合
         # 現在のカウントをエクセルに追加
-        sheet = wb.active
         sheet.append([current_date, total_count])
-        wb.save('count_report.xlsx')
-        
+        wb.save(excel_path)  # 保存
+
         # カウントリセット
         total_count = 0
         tracked_ids = set()
@@ -100,6 +138,5 @@ cap.release()
 cv2.destroyAllWindows()
 
 # 最後にカウントをエクセルに記録
-sheet = wb.active
 sheet.append([current_date, total_count])
-wb.save('count_report.xlsx')
+wb.save(excel_path)  # 保存
